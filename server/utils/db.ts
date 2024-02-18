@@ -1,5 +1,4 @@
 import knex from "knex";
-import _ from "lodash";
 
 const db = knex({
   client: "pg",
@@ -9,8 +8,8 @@ const db = knex({
       : process.env.DEV_POSTGRES_URL,
 });
 
-export type Table = "products" | "users";
+export const useKnex = () => db;
 
-export const useDb = <T extends {}>(table: Table) => {
-  return db<T>(table.split("-").join(""));
+export const useDb = <T extends {}>(table: TableName) => {
+  return db<T>(table);
 };

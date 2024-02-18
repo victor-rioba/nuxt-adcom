@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   return {
     status: "up",
-    db: Boolean(await useDb("users").first()),
+    db: Boolean(await useKnex().raw("SELECT 1")),
   };
 });

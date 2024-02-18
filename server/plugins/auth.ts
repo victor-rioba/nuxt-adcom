@@ -1,10 +1,4 @@
-type KindeUser = {
-  name: string;
-  email: string;
-  picture: string;
-  given_name: string;
-  family_name: string;
-};
+import type { UserType } from "@kinde-oss/kinde-typescript-sdk";
 
 export default defineNitroPlugin((nitroApp) => {
   //   nitroApp.hooks.hook("request", (event) => {
@@ -19,18 +13,19 @@ export default defineNitroPlugin((nitroApp) => {
     if (event.path.includes("/api/callback")) {
       event.context.kinde
         .getUserProfile()
-        .then(async (kindeUser: KindeUser) => {
-          let user = await useDb("users")
+        .then(async (kindeUser: UserType) => {
+          const user = await useDb("users")
             .first()
             .where("email", kindeUser.email);
-          if (user) return console.log(kindeUser.email, "just logged in!");
+          if (user) return console.log(kindeUser, "just logged in!");
 
           await useDb("users").insert({
+            externalId: kindeUser.id,
             firstName: kindeUser.given_name,
             lastName: kindeUser.family_name,
             image: kindeUser.picture,
             email: kindeUser.email,
-            username: kindeUser.name,
+            username: kindeUser.given_name,
           });
           return console.log(kindeUser.email, "just signed up!");
         })
