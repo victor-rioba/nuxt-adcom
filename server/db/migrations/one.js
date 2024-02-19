@@ -8,6 +8,7 @@ export function up(knex) {
   return knex.schema
     .createTable("users", (table) => {
       table.increments();
+      table.string("externalId").notNullable().unique();
 
       table.string("firstName").notNullable();
       table.string("lastName");

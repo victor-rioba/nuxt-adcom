@@ -8,6 +8,7 @@ declare type TableName =
 
 declare type User = {
   id: number;
+  externalId: string;
 
   firstName: string;
   lastName?: string;
