@@ -60,10 +60,10 @@ declare type Category = {
 
 declare type Product = {
   id: number;
-  storeId: string;
+  storeId: number;
 
   name: string;
-  slug?: string;
+  slug: string;
   sku?: string;
   price: string;
   shortDescription?: string;
@@ -71,7 +71,7 @@ declare type Product = {
   available?: number;
   images: string[];
 
-  status: boolean;
+  isActive: boolean;
 
   createdAt: string;
   updatedAt: string;
