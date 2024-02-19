@@ -91,7 +91,7 @@ function onSelect(option) {
   <UContainer class="h-full space-y-10 pt-16">
     <div class="flex flex-col gap-8 items-center text-2xl py-4">
       <UIcon name="i-solar-bag-check-broken" class="text-4xl" />
-      <h1>Welcome to Adcom.io</h1>
+      <h1>Welcome to adcom.io</h1>
     </div>
     <UCard>
       <UCommandPalette

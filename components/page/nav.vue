@@ -132,7 +132,7 @@ const items = [
       :class="[showNav ? 'text-xl' : 'text-2xl']"
     >
       <UIcon name="i-solar-bag-check-broken" />
-      <span v-show="showNav">Adcom.io</span>
+      <span v-show="showNav">adcom.io</span>
     </NuxtLink>
     <div
       v-for="(nav, i) in navigations"

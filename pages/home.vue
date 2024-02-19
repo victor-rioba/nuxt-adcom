@@ -13,7 +13,7 @@ definePageMeta({
         class="flex gap-2 items-center justify-center text-azul-500 hover:text-azul-400 font-semibold text-2xl"
       >
         <UIcon name="i-solar-bag-check-broken" />
-        <span>Adcom.io</span>
+        <span>adcom.io</span>
       </div>
       <div class="space-x-4">
         <UButton label="Sign in" to="/api/login" external />

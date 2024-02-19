@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "Adcom.io | The e-commerce platform for professional businesses",
+      title: "adcom.io | The e-commerce platform for professional businesses",
       titleTemplate: "%s",
       meta: [
         { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -14,7 +14,7 @@ export default defineNuxtConfig({
         {
           property: "og:title",
           content:
-            "Adcom.io | The e-commerce platform for professional businesses",
+            "adcom.io | The e-commerce platform for professional businesses",
         },
         {
           property: "og:description",
@@ -23,12 +23,12 @@ export default defineNuxtConfig({
         },
         { property: "og:url", content: "https://mercury-blue.vercel.app/" },
         { property: "og:type", content: "website" },
-        { property: "og:site:name", content: "Adcom.io" },
+        { property: "og:site:name", content: "adcom.io" },
         { name: "twitter:card", content: "summary" },
         {
           name: "twitter:title",
           content:
-            "Adcom.io | The e-commerce platform for professional businesses",
+            "adcom.io | The e-commerce platform for professional businesses",
         },
         {
           name: "twitter:description",
