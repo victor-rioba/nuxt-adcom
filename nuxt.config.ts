@@ -46,12 +46,6 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@nuxt/image",
     "@nuxtjs/kinde",
-    [
-      "@formkit/nuxt",
-      {
-        autoImport: true,
-      },
-    ],
   ],
 
   experimental: {
