@@ -10,7 +10,7 @@ definePageMeta({
   >
     <header class="w-screen h-32 flex justify-between items-center px-10 py-10">
       <div
-        class="flex gap-2 items-center justify-center text-azul-500 hover:text-azul-400 font-semibold text-2xl"
+        class="flex gap-2 items-center justify-center text-dodger-blue-500 hover:text-dodger-blue-400 font-semibold text-2xl"
       >
         <UIcon name="i-solar-bag-check-broken" />
         <span>adcom.io</span>
@@ -30,7 +30,7 @@ definePageMeta({
       <span>
         <UIcon
           name="i-solar-bag-check-broken"
-          class="text-azul-400 text-[200px]"
+          class="text-dodger-blue-400 text-[200px]"
         />
       </span>
       <div>

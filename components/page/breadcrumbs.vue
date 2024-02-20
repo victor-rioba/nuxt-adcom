@@ -50,7 +50,7 @@ const fragments = computed(() => {
           </svg>
           <NuxtLink
             :to="`/${fragments.slice(0, i + 1).join('/')}`"
-            class="ml-1 text-xs font-medium text-gray-700 hover:text-azul-600 md:ml-2 capitalize"
+            class="ml-1 text-xs font-medium text-gray-700 hover:text-dodger-blue-600 md:ml-2 capitalize"
           >
             {{ fragment }}
           </NuxtLink>
