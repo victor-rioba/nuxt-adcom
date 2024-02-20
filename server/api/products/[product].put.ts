@@ -9,7 +9,7 @@ const productsSchema = z.object({
   longDescription: z.string().optional(),
   available: z.number().optional(),
   images: z.array(z.string()),
-  status: z.boolean(),
+  isActive: z.boolean(),
 });
 
 const validateProduct = useValidate(productsSchema);

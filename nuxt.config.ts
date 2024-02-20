@@ -40,7 +40,7 @@ export default defineNuxtConfig({
   },
   colorMode: { preference: "light" },
   devtools: { enabled: true },
-  ui: { icons: "all" },
+  // ui: { icons: "all" },
 
   modules: [
     "@nuxt/ui",

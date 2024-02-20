@@ -400,7 +400,7 @@ const items = (row: Product) => [
     {
       label: "Edit",
       icon: "i-heroicons-pencil-square-20-solid",
-      click: () => console.log("Edit", row.id),
+      click: () => navigateTo(`/products/${row.id}`),
     },
     {
       label: "Duplicate",
@@ -482,6 +482,17 @@ const items = (row: Product) => [
         </div>
       </template>
 
+      <template #name-data="{ row }">
+        <NuxtLink
+          :to="{
+            name: 'products-slug',
+            params: { slug: row.id },
+          }"
+        >
+          <span class="text-sm font-medium text-gray-900">{{ row.name }}</span>
+        </NuxtLink>
+      </template>
+
       <!-- <template #category-data="{ row }">
         <UBadge size="xs" :label="row.category" color="azul" variant="subtle" />
       </template> -->
@@ -491,7 +502,10 @@ const items = (row: Product) => [
           <span>{{ row.isActive ? "Published" : "Draft" }}</span>
           <span
             class="h-[6px] w-[6px] rounded-full"
-            :class="{ 'bg-green-500': row.isActive, 'bg-red-400': !row.isActive }"
+            :class="{
+              'bg-green-500': row.isActive,
+              'bg-red-400': !row.isActive,
+            }"
           ></span>
         </div>
       </template>

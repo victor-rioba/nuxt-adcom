@@ -1,34 +1,98 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
 
-const slug = computed(() => (useRoute().params as { slug: string }).slug);
+const toast = useToast();
 
-const isAddPage = computed(() => slug.value === "add");
+const productId = computed(() => (useRoute().params as { slug: string }).slug);
 
-const { data } = await useFetch("/api/products/:product", {
-  method: "GET",
-  params: { product: slug.value },
-});
+const isAddPage = computed(() => productId.value === "add");
+
+const data = ref<Product>();
 
 const state = reactive({
   name: "",
   sku: "",
   longDescription: "",
+  price: "",
 });
 
-const images = ref([]);
+const slug = computed(() => state.name.toLowerCase().replace(/\s/g, "-"));
+
+const images = ref<string[]>([]);
 
 const validate = (state: any): FormError[] => {
   const errors = [];
   if (!state.name) errors.push({ path: "name", message: "Required" });
-  if (!state.sku) errors.push({ path: "sku", message: "Required" });
+  if (!state.price) errors.push({ path: "price", message: "Required" });
   return errors;
 };
 
-async function onSubmit(event: FormSubmitEvent<any>) {
-  // Do something with data
-  console.log(event.data);
+type ProductRequest = {
+  slug: string;
+  images: string[];
+  isActive: boolean;
+  name: string;
+  sku: string;
+  longDescription: string;
+  price: string;
+};
+
+const createProduct = async (product: ProductRequest) => {
+  const res = await $fetch("/api/products", {
+    method: "POST",
+    body: product,
+  });
+
+  navigateTo({ name: "products-slug", params: { slug: res.id } });
+};
+
+const updateProduct = async (product: ProductRequest) => {
+  const res = await $fetch(`/api/products/${productId.value}`, {
+    method: "PUT",
+    body: product,
+  });
+  state.name = res.name;
+  state.sku = res.sku || "";
+  state.longDescription = res.longDescription || "";
+  state.price = res.price;
+  images.value = res.images;
+};
+
+async function onSubmit(_event: FormSubmitEvent<any>) {
+  const product = {
+    ...state,
+    slug: slug.value,
+    images: images.value,
+    isActive: true,
+  };
+
+  if (isAddPage.value) {
+    await createProduct(product);
+    toast.add({
+      icon: "i-heroicons-check-circle",
+      title: "Product added successfully",
+    });
+  } else {
+    await updateProduct(product);
+    toast.add({
+      icon: "i-heroicons-check-circle",
+      title: "Product updated successfully",
+    });
+  }
 }
+
+const onDeleteProduct = async () => {
+  await $fetch(`/api/products/${productId.value}`, { method: "DELETE" });
+  toast.add({
+    icon: "i-heroicons-trash-20-solid",
+    title: "Product deleted successfully",
+  });
+  navigateTo({ name: "products" });
+};
+
+const onDiscardChanges = () => {
+  navigateTo({ name: "products-slug", params: { slug: productId.value } });
+};
 
 watch(
   data,
@@ -37,10 +101,19 @@ watch(
       state.name = value.name;
       state.sku = value.sku || "";
       state.longDescription = value.longDescription || "";
+      state.price = value.price;
+      // images.value = value.images;
     }
   },
   { immediate: true }
 );
+
+onMounted(async () => {
+  if (isAddPage.value) return;
+  await $fetch(`/api/products/${productId.value}`).then(
+    (res) => (data.value = res)
+  );
+});
 </script>
 
 <template>
@@ -65,6 +138,7 @@ watch(
             icon="i-heroicons-pencil-square-20-solid"
             label="Edit Product"
             size="md"
+            type="submit"
           />
           <UButton
             icon="i-heroicons-trash-20-solid"
@@ -72,6 +146,7 @@ watch(
             color="red"
             variant="outline"
             size="md"
+            @click="onDeleteProduct"
           />
           <UButton
             icon="i-heroicons-x-mark-20-solid"
@@ -79,6 +154,7 @@ watch(
             color="gray"
             variant="outline"
             size="md"
+            @click="onDiscardChanges"
           />
         </div>
       </div>
@@ -101,6 +177,16 @@ watch(
               color="gray"
               variant="outline"
               v-model="state.sku"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="Price" name="price">
+            <UInput
+              size="md"
+              placeholder="Product Price"
+              color="gray"
+              variant="outline"
+              v-model="state.price"
             />
           </UFormGroup>
 
@@ -251,12 +337,13 @@ watch(
               </svg>
             </div>
             <input
-              datepicker=""
               id="datepicker"
               type="text"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 datepicker-input"
-              value="15/08/2022"
+              :value="data?.createdAt"
               placeholder="Select date"
+              datepicker
+              disabled
             />
           </div>
         </div>

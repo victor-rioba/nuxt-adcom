@@ -9,7 +9,9 @@ export const useValidate =
       schema.safeParse(body)
     );
     if (!result.success) {
-      throw useBadRequestError(result.error.issues.join(", "));
+      throw useBadRequestError(
+        result.error.issues.map((i) => i.message).join(", ")
+      );
     }
     return result.data;
   };

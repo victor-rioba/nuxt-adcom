@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 export default <Partial<Config>>{
-  content: ["formkit.theme.ts"],
   theme: {
     extend: {
       colors: {
