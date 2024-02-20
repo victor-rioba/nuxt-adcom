@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 definePageMeta({
   middleware: ["auth-logged-in"],
 });
@@ -76,11 +76,11 @@ const groups = computed(() =>
   ].filter(Boolean)
 );
 
-function onSelect(option) {
+function onSelect(option: any) {
   if (option.click) {
     option.click();
   } else if (option.to) {
-    router.push(option.to);
+    navigateTo(option.to);
   } else if (option.href) {
     window.open(option.href, "_blank");
   }
@@ -94,12 +94,14 @@ function onSelect(option) {
       <h1>Welcome to adcom.io</h1>
     </div>
     <UCard>
-      <UCommandPalette
-        ref="commandPaletteRef"
-        :groups="groups"
-        :autoselect="false"
-        @update:model-value="onSelect"
-      />
+      <ClientOnly>
+        <UCommandPalette
+          ref="commandPaletteRef"
+          :groups="groups"
+          :autoselect="false"
+          @update:model-value="onSelect"
+        />
+      </ClientOnly>
     </UCard>
   </UContainer>
 </template>

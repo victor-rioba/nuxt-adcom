@@ -94,16 +94,14 @@ const navigations = [
 
 const showNav = ref(true);
 
-const { $auth } = useNuxtApp();
-
-const user = computed(() => $auth.user);
+const { user } = useAuth();
 
 const items = [
   [
     {
       label: "Account",
       avatar: {
-        src: user.value?.picture ?? "",
+        src: user?.picture ?? "",
       },
     },
   ],
@@ -128,7 +126,7 @@ const items = [
   <UCard as="nav" class="relative min-w-fit">
     <NuxtLink
       to="/"
-      class="flex gap-2 items-center mb-16 justify-center text-azul-500 hover:text-azul-400 font-semibold"
+      class="flex gap-2 items-center mb-16 justify-center text-dodger-blue-500 hover:text-dodger-blue-400 font-semibold"
       :class="[showNav ? 'text-xl' : 'text-2xl']"
     >
       <UIcon name="i-solar-bag-check-broken" />
@@ -170,16 +168,18 @@ const items = [
       class="absolute bottom-0 right-0 left-0 pb-8 px-4 flex items-center"
       :class="[showNav ? 'justify-between' : 'flex-col gap-4']"
     >
-      <UDropdown :items="items" mode="hover">
-        <UAvatar
-          chip-color="primary"
-          chip-text=""
-          chip-position="top-right"
-          size="sm"
-          :src="user?.picture || ''"
-          alt="Avatar"
-        />
-      </UDropdown>
+      <ClientOnly>
+        <UDropdown :items="items" mode="hover">
+          <UAvatar
+            chip-color="primary"
+            chip-text=""
+            chip-position="top-right"
+            size="sm"
+            :src="user?.picture || ''"
+            alt="Avatar"
+          />
+        </UDropdown>
+      </ClientOnly>
 
       <UButton
         :padded="false"
