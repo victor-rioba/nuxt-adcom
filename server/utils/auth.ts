@@ -26,5 +26,5 @@ export const getStoreFromAuth = async (event: H3Event<EventHandlerRequest>) => {
     .where("users.email", authUser.email)
     .first();
   if (!store) throw useUnauthorizedError();
-  return store as { id: number };
+  return store as { id: string };
 };

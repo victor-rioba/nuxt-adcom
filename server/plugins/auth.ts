@@ -14,12 +14,6 @@ export default defineNitroPlugin((nitroApp) => {
             .first()
             .where("email", kindeUser.email);
 
-          // const existingStore = await useDb<Store>("stores").insert({
-          //   userId: existingUser.id,
-          //   name: kindeUser.given_name + "'s Store",
-          // })
-
-          // console.log("existingStore", existingStore);
           if (existingUser) return console.log(kindeUser.email, "just logged in!");
 
           const [newUser] = await useDb<User>("users")
@@ -27,7 +21,7 @@ export default defineNitroPlugin((nitroApp) => {
               externalId: kindeUser.id,
               firstName: kindeUser.given_name,
               lastName: kindeUser.family_name,
-              image: kindeUser.picture || "",
+              avatar: kindeUser.picture || "",
               email: kindeUser.email,
               username: kindeUser.given_name,
             })

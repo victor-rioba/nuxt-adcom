@@ -19,12 +19,11 @@ export default defineEventHandler(async (event) => {
   const body = await validateProduct(event);
   const productId = getRouterParam(event, "product");
 
-
-  const [product] = await useDb<Product>("products")
+  const [product] = await useDb<Omit<Product, 'images'>>("products")
     .update(body)
     .where("storeId", store.id)
     .where("id", productId)
     .returning("*");
 
-  return product;
+  return product as Product;
 });

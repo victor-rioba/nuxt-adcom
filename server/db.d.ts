@@ -4,25 +4,28 @@ declare type TableName =
   | "customerGroups"
   | "categories"
   | "products"
-  | "attributes";
+  | "attributes"
+  | "variants"
+  | "images"
+  | "products_images"
 
 declare type User = {
-  id: number;
+  id: string;
   externalId: string;
 
   firstName: string;
   lastName?: string;
   username?: string;
   email: string;
-  image?: string;
+  avatar?: string;
 
   createdAt: string;
   updatedAt: string;
 };
 
 declare type Store = {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
 
   name: string;
   legalName?: string;
@@ -36,8 +39,9 @@ declare type Store = {
 };
 
 declare type CustomerGroup = {
-  id: number;
-  storeId: number;
+  id: string;
+  storeId: string;
+  imageId: string;
 
   name: string;
 
@@ -46,21 +50,22 @@ declare type CustomerGroup = {
 };
 
 declare type Category = {
-  id: number;
-  storeId: number;
+  id: string;
+  storeId: string;
+  imageId: string;
+  image?: Image;
 
   name: string;
   slug: string;
   description?: string;
-  image?: string;
 
   createdAt: string;
   updatedAt: string;
 };
 
 declare type Product = {
-  id: number;
-  storeId: number;
+  id: string;
+  storeId: string;
 
   name: string;
   slug: string;
@@ -69,9 +74,12 @@ declare type Product = {
   shortDescription?: string;
   longDescription?: string;
   available?: number;
-  images: string[];
-
   isActive: boolean;
+  
+  images: Image[];
+  categories: Category[];
+  attributes: Attribute[];
+  variants: Variant[];
 
   createdAt: string;
   updatedAt: string;
@@ -79,14 +87,15 @@ declare type Product = {
 };
 
 declare type Attribute = {
-  id: number;
-  storeId: number;
+  id: string;
+  storeId: string;
 
   name: string;
   slug: string;
 
   type: string;
   inputType: string;
+  isRequired: boolean;
 
   options: string[];
   unit?: string;
@@ -95,11 +104,50 @@ declare type Attribute = {
   updatedAt: string;
 };
 
-// declare type Order = {
-//   id: number;
-//   storeId: number;
+declare type Variant = {
+  id: string;
+  productId: string;
 
-//   customerId: number;
+  sku?: string;
+  price: string;
+  shortDescription?: string;
+  longDescription?: string;
+  available: number;
+  isActive: boolean;
+
+  attributes: Attribute[];
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+};
+
+declare type Image = {
+  id: string;
+  storeId: string;
+  
+  assetId: string;
+  signature: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+  type: string;
+  url: string;
+  secureUrl: string;
+  folder: string;
+  path: string;
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+};
+
+// declare type Order = {
+//   id: string;
+//   storeId: string;
+
+//   customerId: string;
 //   status: string;
 //   total: string;
 //   createdAt: string;
@@ -108,9 +156,9 @@ declare type Attribute = {
 // };
 
 // declare type OrderItem = {
-//   id: number;
-//   orderId: number;
-//   productId: number;
+//   id: string;
+//   orderId: string;
+//   productId: string;
 //   quantity: number;
 //   price: string;
 //   total: string;
@@ -120,8 +168,8 @@ declare type Attribute = {
 // };
 
 // declare type Address = {
-//   id: number;
-//   userId: number;
+//   id: string;
+//   userId: string;
 
 //   street: string;
 //   city: string;

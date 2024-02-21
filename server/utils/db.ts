@@ -1,8 +1,9 @@
-import knex from "knex";
+import Knex from "knex";
+import { Model } from "objection";
 
 import { attachPaginate } from "knex-paginate";
 
-const db = knex({
+const knex = Knex({
   client: "pg",
   connection:
     process.env.NODE_ENV === "production"
@@ -11,8 +12,10 @@ const db = knex({
 });
 attachPaginate();
 
-export const useKnex = () => db;
+Model.knex(knex);
 
-export const useDb = <T extends {}>(table: TableName) => {
-  return db<T>(table);
+export const useKnex = () => knex;
+
+export const useDb = <T extends {}>(table: string) => {
+  return knex<T>(table);
 };
