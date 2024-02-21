@@ -40,15 +40,28 @@ export default defineNuxtConfig({
   },
   colorMode: { preference: "light" },
   devtools: { enabled: true },
-  // ui: { icons: "all" },
 
-  modules: [
-    "@nuxt/ui",
-    "@nuxt/image",
-    "@nuxtjs/kinde",
-  ],
+  modules: ["@nuxt/ui", "@nuxt/image", "@nuxtjs/kinde"],
+
+  image: {
+    cloudinary: {
+      baseURL: "https://res.cloudinary.com/dd9ngrnnr/image/upload/",
+    },
+    providers: {
+      blob: {
+        name: "blob",
+        provider: "~/providers/blob.ts",
+      },
+    },
+  },
 
   experimental: {
     typedPages: true,
   },
+
+  runtimeConfig: {
+    public: {
+      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    },
+  }
 });
