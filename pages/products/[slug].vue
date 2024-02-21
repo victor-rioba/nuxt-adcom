@@ -18,7 +18,7 @@ const state = reactive({
 
 const slug = computed(() => state.name.toLowerCase().replace(/\s/g, "-"));
 
-const images = ref<string[]>([]);
+const images = ref<Image[]>([]);
 
 const validate = (state: any): FormError[] => {
   const errors = [];
@@ -62,7 +62,7 @@ async function onSubmit(_event: FormSubmitEvent<any>) {
   const product = {
     ...state,
     slug: slug.value,
-    images: images.value,
+    images: images.value.map((img) => img.id),
     isActive: true,
   };
 
@@ -92,6 +92,13 @@ const onDeleteProduct = async () => {
 
 const onDiscardChanges = () => {
   navigateTo({ name: "products-slug", params: { slug: productId.value } });
+};
+
+const isMediaGalleryOpen = ref(false);
+
+const onChoose = (image: Image) => {
+  images.value.push(image);
+  isMediaGalleryOpen.value = false;
 };
 
 watch(
@@ -351,122 +358,79 @@ onMounted(async () => {
           <div class="mb-4">
             <div class="grid gap-4 mt-2 mb-8">
               <div>
-                <div class="flex items-center justify-center w-full">
-                  <label
-                    for="dropzone-file"
+                <div
+                  v-if="images.length"
+                  class="h-64 grid place-content-center"
+                >
+                  <NuxtImg
+                    provider="cloudinary"
+                    :src="images[0].path"
+                    format="webp"
+                    alt="product main image"
+                    class="h-[inherit] rounded-lg"
+                  />
+                </div>
+                <div v-else class="flex items-center justify-center w-full">
+                  <div
                     class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                    @click="isMediaGalleryOpen = true"
                   >
                     <div
-                      class="flex flex-col items-center justify-center pt-5 pb-6"
+                      class="flex flex-col items-center justify-center pt-5 pb-6 gap-4"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="w-10 h-10 mb-3 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewbox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+                      <UIcon
+                        name="i-heroicons-plus-circle-20-solid"
+                        class="text-4xl text-primary"
+                      />
+                      <p
+                        class="mb-2 text-sm font-semibold text-gray-500 dark:text-gray-400"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
-                      <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span class="font-semibold">Click to upload</span>
-                        or drag and drop
-                      </p>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF (MAX. 800x400px)
+                        Click to add image
                       </p>
                     </div>
-                    <UInput id="dropzone-file" type="file" class="hidden" />
-                  </label>
+                  </div>
                 </div>
-                <img
-                  v-if="images.length"
-                  class="h-auto max-w-full rounded-lg"
-                  src=""
-                  alt="product main image"
-                />
               </div>
-              <div class="grid grid-cols-5 gap-4">
-                <div>
-                  <img
+              <div v-if="images.length" class="grid grid-cols-5 gap-4">
+                <div
+                  v-for="image in images.slice(1)"
+                  :key="image.id"
+                  class="relative"
+                >
+                  <NuxtImg
+                    provider="cloudinary"
+                    :src="image.path"
+                    format="webp"
                     class="h-auto max-w-full rounded-lg"
-                    src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg"
-                    alt=""
                   />
                 </div>
-                <div>
-                  <img
+                <div class="relative">
+                  <NuxtImg
+                    provider="cloudinary"
+                    src="/v1708501493/placeholder.png"
+                    format="webp"
                     class="h-auto max-w-full rounded-lg"
-                    src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg"
-                    alt=""
                   />
-                </div>
-                <div>
-                  <img
-                    class="h-auto max-w-full rounded-lg"
-                    src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg"
-                    alt=""
-                  />
-                </div>
-                <div>
-                  <img
-                    class="h-auto max-w-full rounded-lg"
-                    src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-4.jpg"
-                    alt=""
-                  />
-                </div>
-                <div>
-                  <img
-                    class="h-auto max-w-full rounded-lg"
-                    src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-5.jpg"
-                    alt=""
-                  />
+                  <div
+                    class="text-4xl bg-black text-white bg-opacity-20 opacity-50 hover:opacity-100 rounded-[10px] absolute inset-0 grid place-content-center z-10 cursor-pointer"
+                    @click="isMediaGalleryOpen = true"
+                  >
+                    +
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- <div class="flex items-center justify-center w-full">
-              <label
-                for="dropzone-file"
-                class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-              >
-                <div
-                  class="flex flex-col items-center justify-center pt-5 pb-6"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-10 h-10 mb-3 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewbox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span class="font-semibold">Click to upload</span>
-                    or drag and drop
-                  </p>
-                  <p class="text-xs text-gray-500 dark:text-gray-400">
-                    SVG, PNG, JPG or GIF (MAX. 800x400px)
-                  </p>
-                </div>
-                <UInput id="dropzone-file" type="file" class="hidden" />
-              </label>
-            </div> -->
           </div>
         </div>
       </div>
     </UForm>
+    <UModal
+      v-model="isMediaGalleryOpen"
+      :ui="{
+        width: 'lg:max-w-[75vw]',
+      }"
+    >
+      <MediaLibrary @choose="onChoose" />
+    </UModal>
   </UCard>
 </template>

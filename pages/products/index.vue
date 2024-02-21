@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { InternalApi } from "nitropack";
+
 definePageMeta({
   middleware: ["auth-logged-in"],
 });
@@ -10,61 +12,60 @@ const sort = ref({
   direction: "desc" as SortBy,
 });
 
-const columns = [
-  {
-    key: "id",
-    label: "ID",
-  },
-  {
-    key: "image",
-    label: "Image",
-  },
-  {
-    key: "name",
-    label: "Name",
-    sortable: true,
-  },
-  {
-    key: "shortDescription",
-    label: "Description",
-  },
-  // {
-  //   key: "category",
-  //   label: "Category",
-  // },
-  {
-    key: "price",
-    label: "Price",
-    sortable: true,
-  },
-  // {
-  //   key: "brand",
-  //   label: "Brand",
-  // },
-  {
-    key: "available",
-    label: "In Stock",
-  },
-  {
-    key: "isActive",
-    label: "Status",
-  },
-  {
-    key: "createdAt",
-    label: "Date Added",
-    sortable: true,
-    direction: "desc" as SortBy,
-  },
-  {
-    key: "updatedAt",
-    label: "Date Modified",
-    sortable: true,
-    direction: "desc" as SortBy,
-  },
+type ProductField = keyof Product;
+
+const columnLabels: Record<ProductField, string> = {
+  id: "ID",
+  slug: "Slug",
+  sku: "SKU",
+  storeId: "Store ID",
+  name: "Name",
+  shortDescription: "Summary",
+  longDescription: "Description",
+  price: "Price",
+  available: "In Stock",
+  isActive: "Status",
+  createdAt: "Date Added",
+  updatedAt: "Date Modified",
+  deletedAt: "Date Deleted",
+
+  images: "Image",
+  categories: "Categories",
+  attributes: "Attributes",
+  variants: "Variants",
+};
+
+const columnsToShow: ProductField[] = [
+  "slug",
+  "images",
+  "name",
+  "shortDescription",
+  "longDescription",
+  "price",
+  "available",
+  "isActive",
+  "createdAt",
+  "updatedAt",
 ];
 
-// const selectedColumns = ref(columns);
-const selectedColumns = ref(columns.filter((col) => col.key !== "description"));
+const sortableColumns: ProductField[] = [
+  "name",
+  "price",
+  "createdAt",
+  "updatedAt",
+];
+
+const descColumns: ProductField[] = ["createdAt", "updatedAt"];
+
+const columns = columnsToShow.map((key) => ({
+  key,
+  label: columnLabels[key],
+  sortable: sortableColumns.includes(key),
+  direction: descColumns.includes(key) ? ("desc" as SortBy) : ("asc" as SortBy),
+}));
+
+const selectedColumns = ref(columns);
+
 const columnsTable = computed(() => {
   return [
     ...columns.filter((column) => selectedColumns.value.includes(column)),
@@ -73,293 +74,6 @@ const columnsTable = computed(() => {
     },
   ];
 });
-
-// const data = [
-//   {
-//     id: "1",
-//     title: 'Apple MacBook Pro 16"',
-//     description:
-//       "Apple M1 chip with 8‑core CPU, 8‑core GPU, and 16‑core Neural Engine",
-//     price: "$1,299.00",
-//     status: true,
-//     image:
-//       "https://images.macrumors.com/t/MwgTEggiztXrvIN2l8bZny1f93M=/1600x/article-new/2013/09/2023-macbook-pro-transparent.png",
-//     stock: 62,
-//     createdAt: "2021-01-01",
-//     updatedAt: "2021-01-01",
-//     category: "Computers",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "2",
-//     title: "iPhone 15 Pro Max",
-//     description:
-//       "Apple M1 chip with 8‑core CPU, 8‑core GPU, and 16‑core Neural Engine",
-//     price: "$1,099.00",
-//     status: false,
-//     image:
-//       "https://www.apple.com/v/iphone/home/bn/images/overview/compare/compare_iphone_14_pro__cjmfbiggqhpy_large.jpg",
-//     stock: 0,
-//     createdAt: "2023-10-01",
-//     updatedAt: "2023-10-01",
-//     category: "Phones",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "3",
-//     title: 'Samsung 32" UHD Curved Monitor',
-//     description: "Curved Monitor with 1 Billion colors",
-//     price: "$800.00",
-//     status: true,
-//     image:
-//       "https://images.samsung.com/is/image/samsung/ae-uhd-u32r590cwm-lu32r590cwmxue-lperspectiveblack-167281200?$684_547_PNG$",
-//     stock: 5,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Monitors",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "4",
-//     title: "Samsung Galaxy S23 Ultra",
-//     description: "Curved Monitor with 1 Billion colors",
-//     price: "$1,000.00",
-//     status: true,
-//     image:
-//       "https://images.samsung.com/africa_en/smartphones/galaxy-s23-ultra/buy/nonshop_green.jpg",
-//     stock: 5,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Phones",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "5",
-//     title: "Sony Alpha a7 IV",
-//     description: "Mirrorless Digital Camera with 28-70mm Lens",
-//     price: "$2,480.00",
-//     status: false,
-//     image:
-//       "https://www.camerasafrica.com/wp-content/uploads/2021/11/Sony-Alpha-a7-IV-Mirrorless-Digital-Camera-with-28-70mm-Lens-camerasafrica.jpg",
-//     stock: 0,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Cameras",
-//     brand: "Sony",
-//   },
-//   {
-//     id: "6",
-//     title: "Logitech MX Master 3s",
-//     description: "Advanced wireless mouse",
-//     price: "$219.00",
-//     status: true,
-//     image:
-//       "https://resource.logitech.com/w_150,c_limit,f_auto,q_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/gallery/mx-master-3s-mouse-top-view-black.png?v=1",
-//     stock: 16,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Mouse",
-//     brand: "Logitech",
-//   },
-//   {
-//     id: "7",
-//     title: "Homepod Mini",
-//     description: "Smart Speaker with Siri",
-//     price: "$150.00",
-//     status: true,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2021/01/HomePod-mini-b.jpg",
-//     stock: 22,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Speakers",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "8",
-//     title: "Huawei Watch Fit 2",
-//     description: 'Smart Watch with 1.64" AMOLED Display',
-//     price: "$160.00",
-//     status: false,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2022/06/Huawei-Watch-Fit-2.jpg",
-//     stock: 0,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Smart Watches",
-//     brand: "Huawei",
-//   },
-//   {
-//     id: "9",
-//     title: "Samsung Galaxy Watch 4",
-//     description: 'Smart Watch with 1.64" AMOLED Display',
-//     price: "$220.00",
-//     status: true,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2022/08/Samsung-Galaxy-Watch-5-Pro-c.jpg",
-//     stock: 31,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Smart Watches",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "10",
-//     title: "HP Z32 4K UHD IPS Monitor",
-//     description:
-//       '4K UHD IPS Monitor with 31.5" Display and 3840 x 2160 Resolution',
-//     price: "$999.00",
-//     status: true,
-//     image: "https://support.hp.com/doc-images/604/c05856329.jpg",
-//     stock: 3,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Monitors",
-//     brand: "HP",
-//   },
-//   {
-//     id: "1",
-//     title: 'Apple MacBook Pro 16"',
-//     description:
-//       "Apple M1 chip with 8‑core CPU, 8‑core GPU, and 16‑core Neural Engine",
-//     price: "$1,299.00",
-//     status: true,
-//     image:
-//       "https://images.macrumors.com/t/MwgTEggiztXrvIN2l8bZny1f93M=/1600x/article-new/2013/09/2023-macbook-pro-transparent.png",
-//     stock: 62,
-//     createdAt: "2021-01-01",
-//     updatedAt: "2021-01-01",
-//     category: "Computers",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "2",
-//     title: "iPhone 15 Pro Max",
-//     description:
-//       "Apple M1 chip with 8‑core CPU, 8‑core GPU, and 16‑core Neural Engine",
-//     price: "$1,099.00",
-//     status: false,
-//     image:
-//       "https://www.apple.com/v/iphone/home/bn/images/overview/compare/compare_iphone_14_pro__cjmfbiggqhpy_large.jpg",
-//     stock: 0,
-//     createdAt: "2023-10-01",
-//     updatedAt: "2023-10-01",
-//     category: "Phones",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "3",
-//     title: 'Samsung 32" UHD Curved Monitor',
-//     description: "Curved Monitor with 1 Billion colors",
-//     price: "$800.00",
-//     status: true,
-//     image:
-//       "https://images.samsung.com/is/image/samsung/ae-uhd-u32r590cwm-lu32r590cwmxue-lperspectiveblack-167281200?$684_547_PNG$",
-//     stock: 5,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Monitors",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "4",
-//     title: "Samsung Galaxy S23 Ultra",
-//     description: "Curved Monitor with 1 Billion colors",
-//     price: "$1,000.00",
-//     status: true,
-//     image:
-//       "https://images.samsung.com/africa_en/smartphones/galaxy-s23-ultra/buy/nonshop_green.jpg",
-//     stock: 5,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Phones",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "5",
-//     title: "Sony Alpha a7 IV",
-//     description: "Mirrorless Digital Camera with 28-70mm Lens",
-//     price: "$2,480.00",
-//     status: false,
-//     image:
-//       "https://www.camerasafrica.com/wp-content/uploads/2021/11/Sony-Alpha-a7-IV-Mirrorless-Digital-Camera-with-28-70mm-Lens-camerasafrica.jpg",
-//     stock: 0,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Cameras",
-//     brand: "Sony",
-//   },
-//   {
-//     id: "6",
-//     title: "Logitech MX Master 3s",
-//     description: "Advanced wireless mouse",
-//     price: "$219.00",
-//     status: true,
-//     image:
-//       "https://resource.logitech.com/w_150,c_limit,f_auto,q_auto,dpr_1.0/d_transparent.gif/content/dam/logitech/en/products/mice/mx-master-3s/gallery/mx-master-3s-mouse-top-view-black.png?v=1",
-//     stock: 16,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Mouse",
-//     brand: "Logitech",
-//   },
-//   {
-//     id: "7",
-//     title: "Homepod Mini",
-//     description: "Smart Speaker with Siri",
-//     price: "$150.00",
-//     status: true,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2021/01/HomePod-mini-b.jpg",
-//     stock: 22,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Speakers",
-//     brand: "Apple",
-//   },
-//   {
-//     id: "8",
-//     title: "Huawei Watch Fit 2",
-//     description: 'Smart Watch with 1.64" AMOLED Display',
-//     price: "$160.00",
-//     status: false,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2022/06/Huawei-Watch-Fit-2.jpg",
-//     stock: 0,
-//     createdAt: "2023-12-01",
-//     updatedAt: "2023-13-01",
-//     category: "Smart Watches",
-//     brand: "Huawei",
-//   },
-//   {
-//     id: "9",
-//     title: "Samsung Galaxy Watch 4",
-//     description: 'Smart Watch with 1.64" AMOLED Display',
-//     price: "$220.00",
-//     status: true,
-//     image:
-//       "https://www.phoneplacekenya.com/wp-content/uploads/2022/08/Samsung-Galaxy-Watch-5-Pro-c.jpg",
-//     stock: 31,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Smart Watches",
-//     brand: "Samsung",
-//   },
-//   {
-//     id: "10",
-//     title: "HP Z32 4K UHD IPS Monitor",
-//     description:
-//       '4K UHD IPS Monitor with 31.5" Display and 3840 x 2160 Resolution',
-//     price: "$999.00",
-//     status: true,
-//     image: "https://support.hp.com/doc-images/604/c05856329.jpg",
-//     stock: 3,
-//     createdAt: "2023-01-01",
-//     updatedAt: "2023-09-01",
-//     category: "Monitors",
-//     brand: "HP",
-//   },
-// ];
 
 const { data } = await useFetch("/api/products");
 
@@ -380,7 +94,6 @@ function select(row: Product) {
   } else {
     selected.value.splice(index, 1);
   }
-  // useRouter().push(`/products/${row.id}`);
 }
 
 function onPageChange(page: number) {
@@ -476,9 +189,22 @@ const items = (row: Product) => [
       :rows="list"
       @select="select"
     >
-      <template #image-data="{ row }">
-        <div class="h-6 flex items-center justify-center -ml-6">
-          <img class="h-6" :src="row.image" />
+      <template #images-data="{ row }">
+        <div class="h-6 flex items-center justify-center">
+          <NuxtImg
+            v-if="!row.images.length"
+            provider="cloudinary"
+            src="/v1708501493/placeholder.png"
+            format="webp"
+            height="40"
+          />
+          <NuxtImg
+            v-else
+            provider="cloudinary"
+            :src="row.images[0].path"
+            format="webp"
+            height="40"
+          />
         </div>
       </template>
 
@@ -488,16 +214,17 @@ const items = (row: Product) => [
             name: 'products-slug',
             params: { slug: row.id },
           }"
+          @click.stop=""
         >
           <span class="text-sm font-medium text-gray-900">{{ row.name }}</span>
         </NuxtLink>
       </template>
 
       <!-- <template #category-data="{ row }">
-        <UBadge size="xs" :label="row.category" color="azul" variant="subtle" />
+        <UBadge size="xs" :label="row.category" color="dodger-blue" variant="subtle" />
       </template> -->
 
-      <template #status-data="{ row }">
+      <template #isActive-data="{ row }">
         <div class="text-sm flex items-center gap-1">
           <span>{{ row.isActive ? "Published" : "Draft" }}</span>
           <span
@@ -519,7 +246,7 @@ const items = (row: Product) => [
       </template>
 
       <template #actions-data="{ row }">
-        <UDropdown :items="items(row)">
+        <UDropdown :items="items(row)" @click.stop="">
           <UButton
             color="gray"
             variant="ghost"
