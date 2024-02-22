@@ -1,0 +1,1 @@
+export { default as ProductAddEditForm } from './partials/AddEditForm.vue';
