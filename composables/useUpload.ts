@@ -122,7 +122,7 @@ export const useUpload = () => {
 
     const currentTimestamp = Date.now().toString();
 
-    const signature = await $fetch("/api/signature", {
+    const signature = await $fetch("/api/cloudinary/signature", {
       query: {
         public_id: publicId,
         timestamp: currentTimestamp,

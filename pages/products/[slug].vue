@@ -9,6 +9,8 @@ const isAddPage = computed(() => productId.value === "add");
 
 const data = ref<Product>();
 
+const initialImageIds = ref<string[]>([]);
+
 const state = reactive({
   name: "",
   sku: "",
@@ -20,6 +22,18 @@ const slug = computed(() => state.name.toLowerCase().replace(/\s/g, "-"));
 
 const images = ref<Image[]>([]);
 
+const addedImageIds = computed(() =>
+  images.value
+    .map((img) => img.id)
+    .filter((id) => !initialImageIds.value.includes(id))
+);
+
+const removedImageIds = computed(() =>
+  initialImageIds.value.filter(
+    (id) => !images.value.map((img) => img.id).includes(id)
+  )
+);
+
 const validate = (state: any): FormError[] => {
   const errors = [];
   if (!state.name) errors.push({ path: "name", message: "Required" });
@@ -29,7 +43,7 @@ const validate = (state: any): FormError[] => {
 
 type ProductRequest = {
   slug: string;
-  images: string[];
+  images: { id: string; deleted: boolean }[];
   isActive: boolean;
   name: string;
   sku: string;
@@ -43,11 +57,11 @@ const createProduct = async (product: ProductRequest) => {
     body: product,
   });
 
-  navigateTo({ name: "products-slug", params: { slug: res.id } });
+  navigateTo({ name: "products-slug", params: { slug: res.slug } });
 };
 
 const updateProduct = async (product: ProductRequest) => {
-  const res = await $fetch(`/api/products/${productId.value}`, {
+  const res = await $fetch(`/api/products/${data.value!.id}`, {
     method: "PUT",
     body: product,
   });
@@ -56,13 +70,17 @@ const updateProduct = async (product: ProductRequest) => {
   state.longDescription = res.longDescription || "";
   state.price = res.price;
   images.value = res.images;
+  initialImageIds.value = res.images.map((img) => img.id);
 };
 
 async function onSubmit(_event: FormSubmitEvent<any>) {
   const product = {
     ...state,
     slug: slug.value,
-    images: images.value.map((img) => img.id),
+    images: [
+      ...addedImageIds.value.map((id) => ({ id, deleted: false })),
+      ...removedImageIds.value.map((id) => ({ id, deleted: true })),
+    ],
     isActive: true,
   };
 
@@ -90,6 +108,10 @@ const onDeleteProduct = async () => {
   navigateTo({ name: "products" });
 };
 
+const onRemoveImage = (id: string) => {
+  images.value = images.value.filter((img) => img.id !== id);
+};
+
 const onDiscardChanges = () => {
   navigateTo({ name: "products-slug", params: { slug: productId.value } });
 };
@@ -109,7 +131,7 @@ watch(
       state.sku = value.sku || "";
       state.longDescription = value.longDescription || "";
       state.price = value.price;
-      // images.value = value.images;
+      images.value = value.images;
     }
   },
   { immediate: true }
@@ -117,9 +139,10 @@ watch(
 
 onMounted(async () => {
   if (isAddPage.value) return;
-  await $fetch(`/api/products/${productId.value}`).then(
-    (res) => (data.value = res)
-  );
+  await $fetch(`/api/products/${productId.value}`).then((res) => {
+    data.value = res;
+    initialImageIds.value = res.images.map((img) => img.id);
+  });
 });
 </script>
 
@@ -360,7 +383,7 @@ onMounted(async () => {
               <div>
                 <div
                   v-if="images.length"
-                  class="h-64 grid place-content-center"
+                  class="h-64 grid place-content-center relative"
                 >
                   <NuxtImg
                     provider="cloudinary"
@@ -368,6 +391,13 @@ onMounted(async () => {
                     format="webp"
                     alt="product main image"
                     class="h-[inherit] rounded-lg"
+                  />
+                  <UButton
+                    icon="i-heroicons-trash-20-solid"
+                    class="absolute text-red-500 text-3xl top-0 right-0 opacity-20 hover:opacity-100"
+                    variant="ghost"
+                    square
+                    @click="onRemoveImage(images[0].id)"
                   />
                 </div>
                 <div v-else class="flex items-center justify-center w-full">
@@ -402,6 +432,13 @@ onMounted(async () => {
                     :src="image.path"
                     format="webp"
                     class="h-auto max-w-full rounded-lg"
+                  />
+                  <UButton
+                    icon="i-heroicons-trash-20-solid"
+                    class="absolute text-red-500 text-3xl -top-4 -right-4 opacity-20 hover:opacity-100"
+                    variant="ghost"
+                    square
+                    @click="onRemoveImage(image.id)"
                   />
                 </div>
                 <div class="relative">

@@ -79,7 +79,7 @@ const { data } = await useFetch("/api/products");
 
 const list = computed(() => data.value?.data || []);
 
-const pagination = computed(() => data.value?.meta);
+const pagination = computed(() => data.value?.pagination);
 
 const page = ref(pagination.value?.currentPage || 1);
 
@@ -113,7 +113,7 @@ const items = (row: Product) => [
     {
       label: "Edit",
       icon: "i-heroicons-pencil-square-20-solid",
-      click: () => navigateTo(`/products/${row.id}`),
+      click: () => navigateTo(`/products/${row.slug}`),
     },
     {
       label: "Duplicate",
@@ -134,6 +134,7 @@ const items = (row: Product) => [
     {
       label: "Delete",
       icon: "i-heroicons-trash-20-solid",
+      click: () => $fetch(`/api/products/${row.id}`, { method: "DELETE" }),
     },
   ],
 ];
@@ -192,7 +193,7 @@ const items = (row: Product) => [
       <template #images-data="{ row }">
         <div class="h-6 flex items-center justify-center">
           <NuxtImg
-            v-if="!row.images.length"
+            v-if="!row.images?.length"
             provider="cloudinary"
             src="/v1708501493/placeholder.png"
             format="webp"
@@ -212,7 +213,7 @@ const items = (row: Product) => [
         <NuxtLink
           :to="{
             name: 'products-slug',
-            params: { slug: row.id },
+            params: { slug: row.slug },
           }"
           @click.stop=""
         >

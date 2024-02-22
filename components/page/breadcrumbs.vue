@@ -30,7 +30,6 @@ const fragments = computed(() => {
               d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
             ></path>
           </svg>
-          Home
         </NuxtLink>
       </li>
       <li v-for="(fragment, i) in fragments" :key="fragment">
@@ -50,7 +49,7 @@ const fragments = computed(() => {
           </svg>
           <NuxtLink
             :to="`/${fragments.slice(0, i + 1).join('/')}`"
-            class="ml-1 text-xs font-medium text-gray-700 hover:text-dodger-blue-600 md:ml-2 capitalize"
+            class="ml-1 text-xs font-medium text-gray-700 hover:text-dodger-blue-600 md:ml-2"
           >
             {{ fragment }}
           </NuxtLink>

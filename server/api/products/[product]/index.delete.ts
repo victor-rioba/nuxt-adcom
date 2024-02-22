@@ -1,11 +1,12 @@
 export default defineEventHandler(async (event) => {
   const store = await getStoreFromAuth(event);
+
   const productId = getRouterParam(event, "product");
 
-  const [product] = await useDb<Product>("products")
-    .select()
+  await useDb<Product>("products")
+    .delete()
     .where("storeId", store.id)
-    .where("id", productId)
+    .where("id", productId);
 
-  return product || useNotFoundError();
+  return { statusCode: 204 };
 });

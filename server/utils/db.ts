@@ -1,6 +1,4 @@
 import Knex from "knex";
-import { Model } from "objection";
-
 import { attachPaginate } from "knex-paginate";
 
 const knex = Knex({
@@ -11,8 +9,6 @@ const knex = Knex({
       : process.env.DEV_POSTGRES_URL,
 });
 attachPaginate();
-
-Model.knex(knex);
 
 export const useKnex = () => knex;
 

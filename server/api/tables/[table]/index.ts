@@ -1,11 +1,3 @@
-type Pagination = {
-  total?: number;
-  lastPage?: number;
-  currentPage: number;
-  perPage: number;
-  from: number;
-  to: number;
-};
 
 export default defineEventHandler(async (event) => {
   const user = await getUserFromAuth(event);
@@ -17,7 +9,5 @@ export default defineEventHandler(async (event) => {
     .select()
     .paginate(paginateQuery);
 
-  const meta = pagination as Pagination;
-
-  return { data, meta };
+  return { data, pagination };
 });
