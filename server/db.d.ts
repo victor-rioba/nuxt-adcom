@@ -1,14 +1,3 @@
-declare type TableName =
-  | "users"
-  | "stores"
-  | "customerGroups"
-  | "categories"
-  | "products"
-  | "attributes"
-  | "variants"
-  | "images"
-  | "products_images"
-
 declare type User = {
   id: string;
   externalId: string;
