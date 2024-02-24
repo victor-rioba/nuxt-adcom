@@ -12,8 +12,8 @@ definePageMeta({
       <div
         class="flex gap-2 items-center justify-center text-dodger-blue-500 hover:text-dodger-blue-400 font-semibold text-2xl"
       >
-        <UIcon name="i-solar-bag-check-broken" />
-        <span>adcom.io</span>
+        <PageLogo class="text-3xl" />
+        <span class="hidden md:block">adcom.io</span>
       </div>
       <div class="space-x-4">
         <UButton label="Sign in" to="/api/login" external />
@@ -27,21 +27,18 @@ definePageMeta({
     </header>
 
     <main class="grid place-content-center h-full text-center px-8 mx-auto">
-      <span>
-        <UIcon
-          name="i-solar-bag-check-broken"
-          class="text-dodger-blue-400 text-[200px]"
-        />
-      </span>
+      <div class="flex items-center justify-center">
+        <PageLogo class="text-primary text-[200px]" />
+      </div>
       <div>
         <span
-          class="text-[4rem] md:text-[8rem] font-black bg-gradient bg-clipped"
+          class="text-[4rem] md:text-[8rem] text-primary font-black font-lexend"
         >
           Coming Soon
         </span>
       </div>
       <p class="text-center max-w-2xl mx-auto leading-8 py-8">
-        The best e-commerce admin from Africa vetted by industry leading
+he best e-commerce admin from Africa vetted by industry leading
         professionals. A well curated admin panel for engaged and driven
         individuals.
       </p>
@@ -70,19 +67,8 @@ definePageMeta({
 
 <style scoped lang="css">
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@700;800;900&display=swap");
-.bg-gradient {
-  background-color: #13adc7;
-  background-image: linear-gradient(
-    43deg,
-    #3bcde3 0%,
-    #138aa7 46%,
-    #1b5b6f 100%
-  );
-}
-.bg-clipped {
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font-family: "Lexend Deca", sans-serif;
+
+.font-lexend {
+  font-family: "Lexend Deca";
 }
 </style>

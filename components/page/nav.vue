@@ -129,7 +129,7 @@ const items = [
       class="flex gap-2 items-center mb-16 justify-center text-dodger-blue-500 hover:text-dodger-blue-400 font-semibold"
       :class="[showNav ? 'text-xl' : 'text-2xl']"
     >
-      <UIcon name="i-solar-bag-check-broken" />
+      <PageLogo class="text-3xl" />
       <span v-show="showNav">adcom.io</span>
     </NuxtLink>
     <div

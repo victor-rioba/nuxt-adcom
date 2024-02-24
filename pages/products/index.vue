@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { InternalApi } from "nitropack";
-
 definePageMeta({
   middleware: ["auth-logged-in"],
 });
@@ -261,13 +259,13 @@ const items = (row: Product) => [
       v-if="pagination?.total && pagination.total > 0"
     >
       <span class="text-sm opacity-50">
-        Showing {{ pagination.currentPage }} - {{ pagination.lastPage }} of
+        Showing {{ pagination.from || 1 }} - {{ pagination.to }} of
         {{ pagination.total }}
       </span>
       <UPagination
         :model-value="pagination.currentPage"
         :page-count="pagination.lastPage"
-        :total="pagination.total"
+        :total="pagination.lastPage"
         @update:model-value="onPageChange"
       />
     </div>
