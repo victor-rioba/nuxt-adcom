@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
+import { format } from "date-fns";
 
 const props = defineProps<{
   product?: Product | null;
@@ -26,10 +27,10 @@ const state = reactive({
 const hasBeenEdited = computed(() => {
   return (
     props.hasImagesBeenEdited ||
-    state.name !== (props.product?.name || '') ||
-    state.sku !== (props.product?.sku || '') ||
-    state.longDescription !== (props.product?.longDescription || '') ||
-    state.price !== (props.product?.price || '')
+    state.name !== (props.product?.name || "") ||
+    state.sku !== (props.product?.sku || "") ||
+    state.longDescription !== (props.product?.longDescription || "") ||
+    state.price !== (props.product?.price || "")
   );
 });
 
@@ -219,72 +220,7 @@ watchEffect(() => {
             />
           </UFormGroup> -->
 
-        <!-- <UDivider />
-
-          <UFormGroup label="Brand" name="brand">
-            <UInput
-              size="md"
-              placeholder="Product Brand"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Barcode" name="barcode">
-            <UInput
-              size="md"
-              placeholder="Product Barcode"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup>
-
-          <UDivider /> -->
-
-        <!-- <UFormGroup label="Item Weight (kg)" name="weight">
-            <UInput
-              size="md"
-              placeholder="Ex. 12"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Length (cm)" name="length">
-            <UInput
-              size="md"
-              placeholder="Ex. 105"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Breadth (cm)" name="breadth">
-            <UInput
-              size="md"
-              placeholder="Ex. 15"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup>
-
-          <UFormGroup label="Width (cm)" name="width">
-            <UInput
-              size="md"
-              placeholder="Ex. 23"
-              color="gray"
-              variant="outline"
-            />
-          </UFormGroup> -->
-
-        <!-- <UCheckbox
-            name="varied"
-            label="Product has multiple options, like different colors or
-              sizes"
-          /> -->
-
-        <!-- createdAt -->
-        <div v-if="!isAddPage" class="relative">
+        <div v-if="!isAddPage && product" class="relative">
           <div
             class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
           >
@@ -306,7 +242,7 @@ watchEffect(() => {
             id="datepicker"
             type="text"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 datepicker-input"
-            :value="product?.createdAt"
+            :value="format(new Date(product.createdAt), `do MMMM yyyy`)"
             placeholder="Select date"
             datepicker
             disabled

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ProductAddEditForm } from "~/features/products";
-
 const toast = useToast();
 
 const slug = computed(() => (useRoute().params as { slug: string }).slug);
@@ -93,7 +91,7 @@ const onDiscardChanges = () => {
 
 <template>
   <UCard>
-    <ProductAddEditForm
+    <ProductFormAddEdit
       :product="data"
       :images="images"
       :has-images-been-edited="hasImagesBeenEdited"

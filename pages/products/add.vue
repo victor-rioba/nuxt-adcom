@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ProductAddEditForm } from "~/features/products";
-
 const toast = useToast();
 
 const images = ref<Image[]>([]);
@@ -52,7 +50,7 @@ const onDiscardChanges = () => {
 
 <template>
   <UCard>
-    <ProductAddEditForm
+    <ProductFormAddEdit
       :images="images"
       :has-images-been-edited="hasImagesBeenEdited"
       :is-add-page="true"
