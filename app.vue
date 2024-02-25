@@ -6,10 +6,10 @@
 </template>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 
 :root {
-  font-family: "Manrope", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "DM Sans", sans-serif;
   line-height: 1.3;
   letter-spacing: normal;
   font-weight: 400;
