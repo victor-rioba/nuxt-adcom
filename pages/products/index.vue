@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { format } from "date-fns";
+
 definePageMeta({
   middleware: ["auth-logged-in"],
 });
@@ -192,6 +194,7 @@ const items = (row: Product) => [
         <div class="h-6 flex items-center justify-center">
           <NuxtImg
             v-if="!row.images?.length"
+            class="rounded"
             provider="cloudinary"
             src="/v1708501493/placeholder.png"
             format="webp"
@@ -199,6 +202,7 @@ const items = (row: Product) => [
           />
           <NuxtImg
             v-else
+            class="rounded"
             provider="cloudinary"
             :src="row.images[0].path"
             format="webp"
@@ -237,11 +241,11 @@ const items = (row: Product) => [
       </template>
 
       <template #createdAt-data="{ row }">
-        <span>{{ new Date(row.createdAt).toDateString() }}</span>
+        <span>{{ format(new Date(row.createdAt), `do MMMM yyyy`) }}</span>
       </template>
 
       <template #updatedAt-data="{ row }">
-        <span>{{ new Date(row.updatedAt).toDateString() }}</span>
+        <span>{{ format(new Date(row.updatedAt), `do MMMM yyyy`) }}</span>
       </template>
 
       <template #actions-data="{ row }">
