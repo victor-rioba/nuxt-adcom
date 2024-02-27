@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 const productsSchema = z.object({
   name: z.string(),
@@ -12,58 +12,47 @@ const productsSchema = z.object({
     .array(z.object({ id: z.string(), deleted: z.boolean() }))
     .optional(),
   isActive: z.boolean(),
-});
+})
 
-const validateProduct = useValidate(productsSchema);
+const validateProduct = useValidate(productsSchema)
 
 export default defineEventHandler(async (event) => {
-  const store = await getStoreFromAuth(event);
-  const productId = getRouterParam(event, "product");
-  const { images, ...body } = await validateProduct(event);
+  const store = await getStoreFromAuth(event)
+  const productId = getRouterParam(event, "product")
+  const { images, ...body } = await validateProduct(event)
 
-  await useDb<Omit<Product, "images">>("products")
+  await db<Omit<Product, "images">>("products")
     .update(body)
     .where("storeId", store.id)
-    .where("id", productId);
+    .where("id", productId)
 
   if (images?.length) {
     const deletedImages = images
       .filter((img) => img.deleted)
-      .map((img) => img.id);
+      .map((img) => img.id)
     const addedImages = images
       .filter((img) => !img.deleted)
-      .map((img) => img.id);
+      .map((img) => img.id)
 
     await Promise.all(
       [
         addedImages.length &&
-          useDb("products_images").insert(
-            addedImages.map((imageId) => ({ imageId, productId }))
+          db("products_images").insert(
+            addedImages.map((imageId) => ({ imageId, productId })),
           ),
         deletedImages.length &&
-          useDb("products_images")
+          db("products_images")
             .delete()
             .where("productId", productId)
             .whereIn("imageId", deletedImages),
-      ].filter(Boolean)
-    );
+      ].filter(Boolean),
+    )
   }
 
-  const product = await useDb<Product>("products")
+  const query = db<Product>("products")
     .first()
     .where("products.storeId", store.id)
     .where("products.id", productId)
-    .select<Product>(
-      "products.*",
-      useKnex().raw("json_agg(images.*) as images")
-    )
-    .leftJoin<Product>(
-      "products_images",
-      "products.id",
-      "products_images.productId"
-    )
-    .leftJoin<Product>("images", "products_images.imageId", "images.id")
-    .groupBy("products.id");
 
-  return product;
-});
+  return populateProductRelations(query)
+})

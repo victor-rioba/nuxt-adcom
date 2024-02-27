@@ -1,22 +1,13 @@
 export default defineEventHandler(async (event) => {
-  const store = await getStoreFromAuth(event);
+  const store = await getStoreFromAuth(event)
 
-  const paginateQuery = usePaginationQuery(event);
+  const paginateParams = getPaginationFromQuery(event)
 
-  const { data, pagination } = await useDb<Product>("products")
+  const query = db<Product>("products")
     .where("products.storeId", store.id)
-    .select<Product>(
-      "products.*",
-      useKnex().raw("json_agg(images.*) as images")
-    )
-    .leftJoin<Product>(
-      "products_images",
-      "products.id",
-      "products_images.productId"
-    )
-    .leftJoin<Product>("images", "products_images.imageId", "images.id")
-    .groupBy("products.id")
-    .paginate(paginateQuery);
+    .select<Product>("products.*")
 
-  return { data, pagination };
-});
+  const populatedQuery = populateProductRelations(query)
+
+  return populatedQuery.paginate(paginateParams)
+})

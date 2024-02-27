@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod"
 
 const productsSchema = z.object({
   name: z.string(),
@@ -12,39 +12,28 @@ const productsSchema = z.object({
     .array(z.object({ id: z.string(), deleted: z.boolean() }))
     .optional(),
   isActive: z.boolean(),
-});
+})
 
-const validateProduct = useValidate(productsSchema);
+const validateProduct = useValidate(productsSchema)
 
 export default defineEventHandler(async (event) => {
-  const { id: storeId } = await getStoreFromAuth(event);
-  const { images, ...body } = await validateProduct(event);
+  const { id: storeId } = await getStoreFromAuth(event)
+  const { images, ...body } = await validateProduct(event)
 
-  const [{ id: productId }] = await useDb<Omit<Product, "images">>("products")
+  const [{ id: productId }] = await db<Omit<Product, "images">>("products")
     .insert({ ...body, storeId })
-    .returning("id");
+    .returning("id")
 
   if (images?.length) {
-    await useDb("products_images").insert(
+    await db("products_images").insert(
       images
         .filter((img) => !img.deleted)
-        .map((img) => ({ imageId: img.id, productId }))
-    );
+        .map((img) => ({ imageId: img.id, productId })),
+    )
   }
-  const product = await useDb<Product>("products")
+  const query = db<Product>("products")
     .first()
     .where("products.id", productId)
-    .select<Product>(
-      "products.*",
-      useKnex().raw("json_agg(images.*) as images")
-    )
-    .leftJoin<Product>(
-      "products_images",
-      "products.id",
-      "products_images.productId"
-    )
-    .leftJoin<Product>("images", "products_images.imageId", "images.id")
-    .groupBy("products.id");
 
-  return product;
-});
+  return populateProductRelations(query)
+})

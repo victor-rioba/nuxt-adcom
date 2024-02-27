@@ -1,12 +1,12 @@
 export default defineEventHandler(async (event) => {
-  const store = await getStoreFromAuth(event);
+  const store = await getStoreFromAuth(event)
 
-  const productId = getRouterParam(event, "product");
+  const productId = getRouterParam(event, "product")
 
-  await useDb<Product>("products")
-    .delete()
+  await db<Product>("products")
     .where("storeId", store.id)
-    .where("id", productId);
+    .where("id", productId)
+    .update({ deletedAt: new Date().toISOString() })
 
-  return { statusCode: 204 };
-});
+  return { statusCode: 204 }
+})

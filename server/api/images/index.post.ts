@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
   const { id: storeId } = await getStoreFromAuth(event);
   const body = await validateProduct(event);
 
-  const [image] = await useDb<Image>("images")
+  const [image] = await db<Image>("images")
     .insert({ ...body, storeId })
     .returning("*");
 

@@ -6,14 +6,14 @@ export default defineNitroPlugin((nitroApp) => {
       event.context.kinde
         .getUserProfile()
         .then(async (kindeUser: UserType) => {
-          const existingUser = await useDb("users")
+          const existingUser = await db("users")
             .first()
             .where("email", kindeUser.email);
 
           if (existingUser)
             return console.log(kindeUser.email, "just logged in!");
 
-          const [newUser] = await useDb<User>("users")
+          const [newUser] = await db<User>("users")
             .insert({
               externalId: kindeUser.id,
               firstName: kindeUser.given_name,
@@ -24,7 +24,7 @@ export default defineNitroPlugin((nitroApp) => {
             })
             .returning("id");
 
-          await useDb<Store>("stores").insert({
+          await db<Store>("stores").insert({
             userId: newUser.id,
             name: kindeUser.given_name + "'s Store",
           });

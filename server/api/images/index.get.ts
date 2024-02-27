@@ -1,12 +1,12 @@
 export default defineEventHandler(async (event) => {
-  const store = await getStoreFromAuth(event);
+  const store = await getStoreFromAuth(event)
 
-  const paginateQuery = usePaginationQuery(event);
+  const paginateParams = getPaginationFromQuery(event)
 
-  const { data, pagination } = await useDb<Image>("images")
+  const { data, pagination } = await db<Image>("images")
     .select()
     .where("storeId", store.id)
-    .paginate(paginateQuery);
+    .paginate(paginateParams)
 
-  return { data, pagination };
-});
+  return { data, pagination }
+})

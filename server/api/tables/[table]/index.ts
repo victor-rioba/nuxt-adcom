@@ -2,12 +2,12 @@
 export default defineEventHandler(async (event) => {
   const user = await getUserFromAuth(event);
   // todo: add user role check
-  const paginateQuery = usePaginationQuery(event);
+  const paginateParams = getPaginationFromQuery(event);
   const table = getRouterParam(event, "table")!;
 
-  const { data, pagination } = await useDb(table)
+  const { data, pagination } = await db(table)
     .select()
-    .paginate(paginateQuery);
+    .paginate(paginateParams);
 
   return { data, pagination };
 });
