@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   colorMode: { preference: "light" },
   devtools: { enabled: true },
 
-  modules: ["@nuxt/ui", "@nuxt/image", "@nuxtjs/kinde"],
+  modules: ["@nuxt/ui", "@nuxt/image", "@nuxtjs/kinde" /* "nuxt-security" */],
 
   image: {
     cloudinary: {
@@ -61,7 +61,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      appUrl: process.env.NUXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      appUrl: process.env.NUXT_PUBLIC_APP_URL || "http://localhost:3000",
     },
-  }
-});
+  },
+})
