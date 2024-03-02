@@ -1,4 +1,5 @@
 import { z } from "zod"
+import type { Product } from '~/server/db/schema'
 
 const productsSchema = z.object({
   name: z.string(),
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const productId = getRouterParam(event, "product")
   const { images, ...body } = await validateProduct(event)
 
-  await db<Omit<Product, "images">>("products")
+  await db("products")
     .update(body)
     .where("storeId", store.id)
     .where("id", productId)

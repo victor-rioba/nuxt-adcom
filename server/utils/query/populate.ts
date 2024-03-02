@@ -1,6 +1,8 @@
 import type { Knex } from "knex"
 
-export const populateThrough = <T extends {}>(
+// todo: add an image for every product so that I can use innerJoin instead of leftJoin
+
+export const populateThrough = <T extends {}, M = {}>(
   query: Knex.QueryBuilder<T>,
   left: string,
   right: string,
@@ -11,17 +13,17 @@ export const populateThrough = <T extends {}>(
   },
 ) => {
   return query
-    .select<T>(
+    .select<T & M>(
       knex.raw(
         `coalesce(json_agg(${right}.*) FILTER (WHERE ${right}.id IS NOT NULL), '[]') as ${right}`,
       ),
     )
-    .leftJoin<T>(
+    .leftJoin<T & M>(
       through.table,
       `${left}.id`,
       `${through.table}.${through.leftColumn}`,
     )
-    .leftJoin<T>(
+    .leftJoin<T & M>(
       `${right}`,
       `${through.table}.${through.rightColumn}`,
       `${right}.id`,
@@ -29,24 +31,24 @@ export const populateThrough = <T extends {}>(
     .groupBy(`${left}.id`)
 }
 
-export const populate = <T extends {}>(
+export const populate = <T extends {}, M = {}>(
   query: Knex.QueryBuilder<T>,
   left: string,
   right: string,
   rightColumn: string,
 ) => {
   return query
-    .select<T>(
+    .select<T & M>(
       knex.raw(
         `coalesce(json_agg(${right}.*) FILTER (WHERE ${right}.id IS NOT NULL), '[]') as ${right}`,
       ),
     )
-    .leftJoin<T>(`${right}`, `${left}.id`, `${right}.${rightColumn}`)
+    .leftJoin<T & M>(`${right}`, `${left}.id`, `${right}.${rightColumn}`)
     .groupBy(`${left}.id`)
 }
 
 const populateImages = <T extends {}>(query: Knex.QueryBuilder<T>) => {
-  return populateThrough(query, "products", "images", {
+  return populateThrough<T, { images: Image[] }>(query, "products", "images", {
     table: "products_images",
     leftColumn: "productId",
     rightColumn: "imageId",
@@ -54,26 +56,43 @@ const populateImages = <T extends {}>(query: Knex.QueryBuilder<T>) => {
 }
 
 const populateVariants = <T extends {}>(query: Knex.QueryBuilder<T>) => {
-  return populate(query, "products", "variants", "productId")
+  return populate<T, { variants: Variant[] }>(
+    query,
+    "products",
+    "variants",
+    "productId",
+  )
 }
 
 const populateCategories = <T extends {}>(query: Knex.QueryBuilder<T>) => {
-  return populateThrough(query, "products", "categories", {
-    table: "products_categories",
-    leftColumn: "productId",
-    rightColumn: "categoryId",
-  })
+  return populateThrough<T, { categories: Category[] }>(
+    query,
+    "products",
+    "categories",
+    {
+      table: "products_categories",
+      leftColumn: "productId",
+      rightColumn: "categoryId",
+    },
+  )
 }
 
 const populateAttributes = <T extends {}>(query: Knex.QueryBuilder<T>) => {
-  return populateThrough(query, "products", "attributes", {
-    table: "products_attributes",
-    leftColumn: "productId",
-    rightColumn: "attributeId",
-  })
+  return populateThrough<T, { attributes: Attribute[] }>(
+    query,
+    "products",
+    "attributes",
+    {
+      table: "products_attributes",
+      leftColumn: "productId",
+      rightColumn: "attributeId",
+    },
+  )
 }
 
-export const populateProductRelations = <T extends {}>(query: Knex.QueryBuilder<T>) => {
+export const populateProductRelations = <T extends {}>(
+  query: Knex.QueryBuilder<T>,
+) => {
   return populateAttributes(
     populateCategories(populateImages(populateVariants(query))),
   )

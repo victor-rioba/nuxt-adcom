@@ -1,3 +1,5 @@
+import type { Product } from '~/server/db/schema'
+
 export default defineEventHandler(async (event) => {
   const store = await getStoreFromAuth(event)
   const slug = getRouterParam(event, "product")
