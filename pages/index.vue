@@ -3,7 +3,6 @@ definePageMeta({
   middleware: ["auth-logged-in"],
 });
 
-const router = useRouter();
 const toast = useToast();
 
 const commandPaletteRef = ref();
