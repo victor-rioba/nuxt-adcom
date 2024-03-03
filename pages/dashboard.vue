@@ -7,20 +7,21 @@ import {
   MenuButton,
   MenuItem,
   MenuItems,
-} from "@headlessui/vue";
+} from "@headlessui/vue"
+import type { Product } from "~/types"
 
 definePageMeta({
   layout: false,
-});
+})
 
-const { user } = useAuth();
+const { user } = useAuth()
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Team", href: "#", current: false },
   { name: "Projects", href: "#", current: false },
   { name: "Calendar", href: "#", current: false },
   { name: "Reports", href: "#", current: false },
-];
+]
 
 const navigations = [
   {
@@ -114,22 +115,22 @@ const navigations = [
       },
     ],
   },
-];
+]
 
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },
   { name: "Sign out", href: "#" },
-];
+]
 
-type SortBy = "asc" | "desc";
+type SortBy = "asc" | "desc"
 
 const sort = ref({
   column: "name",
   direction: "desc" as SortBy,
-});
+})
 
-type ProductField = keyof Product;
+type ProductField = keyof Product
 
 const columnLabels: Record<ProductField, string> = {
   id: "ID",
@@ -150,7 +151,7 @@ const columnLabels: Record<ProductField, string> = {
   categories: "Categories",
   attributes: "Attributes",
   variants: "Variants",
-};
+}
 
 const columnsToShow: ProductField[] = [
   "slug",
@@ -163,25 +164,25 @@ const columnsToShow: ProductField[] = [
   "isActive",
   "createdAt",
   "updatedAt",
-];
+]
 
 const sortableColumns: ProductField[] = [
   "name",
   "price",
   "createdAt",
   "updatedAt",
-];
+]
 
-const descColumns: ProductField[] = ["createdAt", "updatedAt"];
+const descColumns: ProductField[] = ["createdAt", "updatedAt"]
 
 const columns = columnsToShow.map((key) => ({
   key,
   label: columnLabels[key],
   sortable: sortableColumns.includes(key),
   direction: descColumns.includes(key) ? ("desc" as SortBy) : ("asc" as SortBy),
-}));
+}))
 
-const selectedColumns = ref(columns);
+const selectedColumns = ref(columns)
 
 const columnsTable = computed(() => {
   return [
@@ -189,41 +190,41 @@ const columnsTable = computed(() => {
     {
       key: "actions",
     },
-  ];
-});
+  ]
+})
 
-const { data } = await useFetch("/api/products");
+const { data } = await useFetch("/api/products")
 
-const list = computed(() => data.value?.data || []);
+const list = computed(() => data.value?.data || [])
 
-const pagination = computed(() => data.value?.pagination);
+const pagination = computed(() => data.value?.pagination)
 
-const page = ref(pagination.value?.currentPage || 1);
+const page = ref(pagination.value?.currentPage || 1)
 
-const perPage = ref(pagination.value?.perPage || 10);
+const perPage = ref(pagination.value?.perPage || 10)
 
-const selected = ref<Product[]>([]);
+const selected = ref<Product[]>([])
 
 function select(row: Product) {
-  const index = selected.value.findIndex((item) => item.id === row.id);
+  const index = selected.value.findIndex((item) => item.id === row.id)
   if (index === -1) {
-    selected.value.push(row);
+    selected.value.push(row)
   } else {
-    selected.value.splice(index, 1);
+    selected.value.splice(index, 1)
   }
 }
 
 function onPageChange(page: number) {
-  console.log("Page", page);
+  console.log("Page", page)
 }
 
 function onQueryChange(query: string) {
-  console.log("Query", query);
+  console.log("Query", query)
 }
 
-const action = ref("");
+const action = ref("")
 
-const actions = ["Categorize", "Delete"];
+const actions = ["Categorize", "Delete"]
 
 const items = (row: Product) => [
   [
@@ -254,7 +255,7 @@ const items = (row: Product) => [
       click: () => $fetch(`/api/products/${row.id}`, { method: "DELETE" }),
     },
   ],
-];
+]
 </script>
 
 <template>
@@ -262,18 +263,18 @@ const items = (row: Product) => [
     <div class="min-h-full">
       <Disclosure as="nav" class="bg-white shadow" v-slot="{ open }">
         <div class="px-4 sm:px-6 lg:px-8">
-          <div class="flex pt-4 items-center justify-between">
+          <div class="flex items-center justify-between pt-4">
             <div class="flex items-center gap-1">
               <div class="flex-shrink-0">
                 <PageLogo class="h-8 w-auto" />
               </div>
-              <span class="size-[6px] mr-2 bg-black rounded-full"></span>
+              <span class="mr-2 size-[6px] rounded-full bg-black"></span>
               <div
-                class="px-2 flex items-center gap-2 bg-gray-200 rounded-full"
+                class="flex items-center gap-2 rounded-full bg-gray-200 px-2"
               >
-                <span class="font-semibold text-xs py-[2px]">sirkastik</span>
+                <span class="py-[2px] text-xs font-semibold">sirkastik</span>
               </div>
-              <span class="hover:bg-gray-200 p-1 rounded cursor-pointer">
+              <span class="cursor-pointer rounded p-1 hover:bg-gray-200">
                 <svg
                   aria-hidden="true"
                   fill="none"
@@ -292,7 +293,7 @@ const items = (row: Product) => [
               <div class="ml-4 flex items-center md:ml-6">
                 <button
                   type="button"
-                  class="relative rounded-full border size-7 flex items-center justify-center"
+                  class="relative flex size-7 items-center justify-center rounded-full border"
                 >
                   <span class="sr-only">View notifications</span>
                   <UIcon name="i-heroicons-bell" />
@@ -370,7 +371,7 @@ const items = (row: Product) => [
                 v-for="item in navigations"
                 :key="item.title"
                 :to="{ name: 'dashboard' }"
-                class="px-3 py-2 text-sm relative"
+                class="relative px-3 py-2 text-sm"
                 :class="[
                   item.current
                     ? 'border-b-2 border-black font-semibold'
@@ -449,9 +450,9 @@ const items = (row: Product) => [
       </div>
     </header> -->
       <main class="2xl:px-40">
-        <div class="mx-auto max-w-8xl py-6 sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-8xl mx-auto space-y-4 py-6 sm:px-6 lg:px-8">
           <div
-            class="flex flex-col md:flex-row space-x-0 md:space-x-2 space-y-4 md:space-y-0 justify-between pb-4"
+            class="flex flex-col justify-between space-x-0 space-y-4 pb-4 md:flex-row md:space-x-2 md:space-y-0"
           >
             <UInput
               icon="i-heroicons-magnifying-glass-20-solid"
@@ -494,7 +495,7 @@ const items = (row: Product) => [
               @select="select"
             >
               <template #images-data="{ row }">
-                <div class="h-6 flex items-center justify-center">
+                <div class="flex h-6 items-center justify-center">
                   <NuxtImg
                     v-if="!row.images?.length"
                     provider="cloudinary"
@@ -531,7 +532,7 @@ const items = (row: Product) => [
           </template> -->
 
               <template #isActive-data="{ row }">
-                <div class="text-sm flex items-center gap-1">
+                <div class="flex items-center gap-1 text-sm">
                   <span>{{ row.isActive ? "Published" : "Draft" }}</span>
                   <span
                     class="h-[6px] w-[6px] rounded-full"
@@ -564,10 +565,10 @@ const items = (row: Product) => [
           </UCard>
           <div
             v-if="pagination?.total && pagination.lastPage > 1"
-            class="flex justify-between items-center gap-4"
+            class="flex items-center justify-between gap-4"
           >
             <UButton
-              class="text-sm opacity-50 shadow flex-grow pointer-events-none"
+              class="pointer-events-none flex-grow text-sm opacity-50 shadow"
               color="white"
               size="lg"
             >

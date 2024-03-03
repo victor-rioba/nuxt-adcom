@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Image } from "~/types"
+
 const emit = defineEmits<{
   (event: "choose", image: Image): void;
 }>();

@@ -22,7 +22,10 @@ export default defineEventHandler(async (event) => {
         .map((img) => ({ imageId: img.id, productId })),
     )
   }
-  const query = db<Product>("products").first().where("products.id", productId)
+  const query = db<Product>("products")
+    .first()
+    .where("products.id", productId)
+    .select<Product>("products.*")
 
   return populateProductRelations(query)
 })

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Product, Image, ProductRequest } from "~/types"
+
 const toast = useToast();
 
 const images = ref<Image[]>([]);
@@ -6,10 +8,6 @@ const images = ref<Image[]>([]);
 const addedImageIds = computed(() => images.value.map((img) => img.id));
 
 const hasImagesBeenEdited = computed(() => Boolean(addedImageIds.value.length));
-
-type ProductRequest = Partial<Omit<Product, "images">> & {
-  images: { id: string; deleted: boolean }[];
-};
 
 const createProduct = async (body: ProductRequest) => {
   const res = await $fetch("/api/products", {

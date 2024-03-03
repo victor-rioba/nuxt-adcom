@@ -51,7 +51,9 @@ export const categorySelectSchema = createSelectSchema(categories)
 
 export type Product = typeof products.$inferSelect
 export type ProductInsert = typeof products.$inferInsert
-export const productInsertSchema = createInsertSchema(products).extend({
+export const productInsertSchema = createInsertSchema(products, {
+  storeId: z.undefined(),
+}).extend({
   images: z
     .array(z.object({ id: z.string(), deleted: z.boolean() }))
     .optional(),

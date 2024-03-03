@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { format } from "date-fns";
+import { format } from "date-fns"
+import type { Product } from "~/types"
 
 definePageMeta({
   middleware: ["auth-logged-in"],
-});
+})
 
-type SortBy = "asc" | "desc";
+type SortBy = "asc" | "desc"
 
 const sort = ref({
   column: "name",
   direction: "desc" as SortBy,
-});
+})
 
-type ProductField = keyof Product;
+type ProductField = keyof Product
 
 const columnLabels: Record<ProductField, string> = {
   id: "ID",
@@ -33,7 +34,7 @@ const columnLabels: Record<ProductField, string> = {
   categories: "Categories",
   attributes: "Attributes",
   variants: "Variants",
-};
+}
 
 const columnsToShow: ProductField[] = [
   "slug",
@@ -46,25 +47,25 @@ const columnsToShow: ProductField[] = [
   "isActive",
   "createdAt",
   "updatedAt",
-];
+]
 
 const sortableColumns: ProductField[] = [
   "name",
   "price",
   "createdAt",
   "updatedAt",
-];
+]
 
-const descColumns: ProductField[] = ["createdAt", "updatedAt"];
+const descColumns: ProductField[] = ["createdAt", "updatedAt"]
 
 const columns = columnsToShow.map((key) => ({
-  key,
+  key: key as string,
   label: columnLabels[key],
   sortable: sortableColumns.includes(key),
   direction: descColumns.includes(key) ? ("desc" as SortBy) : ("asc" as SortBy),
-}));
+}))
 
-const selectedColumns = ref(columns);
+const selectedColumns = ref(columns)
 
 const columnsTable = computed(() => {
   return [
@@ -72,41 +73,41 @@ const columnsTable = computed(() => {
     {
       key: "actions",
     },
-  ];
-});
+  ]
+})
 
-const { data } = await useFetch("/api/products");
+const { data } = await useFetch("/api/products")
 
-const list = computed(() => data.value?.data || []);
+const list = computed(() => data.value?.data || [])
 
-const pagination = computed(() => data.value?.pagination);
+const pagination = computed(() => data.value?.pagination)
 
-const page = ref(pagination.value?.currentPage || 1);
+const page = ref(pagination.value?.currentPage || 1)
 
-const perPage = ref(pagination.value?.perPage || 10);
+const perPage = ref(pagination.value?.perPage || 10)
 
-const selected = ref<Product[]>([]);
+const selected = ref<Product[]>([])
 
 function select(row: Product) {
-  const index = selected.value.findIndex((item) => item.id === row.id);
+  const index = selected.value.findIndex((item) => item.id === row.id)
   if (index === -1) {
-    selected.value.push(row);
+    selected.value.push(row)
   } else {
-    selected.value.splice(index, 1);
+    selected.value.splice(index, 1)
   }
 }
 
 function onPageChange(page: number) {
-  console.log("Page", page);
+  console.log("Page", page)
 }
 
 function onQueryChange(query: string) {
-  console.log("Query", query);
+  console.log("Query", query)
 }
 
-const action = ref("");
+const action = ref("")
 
-const actions = ["Categorize", "Delete"];
+const actions = ["Categorize", "Delete"]
 
 const items = (row: Product) => [
   [
@@ -137,13 +138,13 @@ const items = (row: Product) => [
       click: () => $fetch(`/api/products/${row.id}`, { method: "DELETE" }),
     },
   ],
-];
+]
 </script>
 
 <template>
   <UCard>
     <div
-      class="flex flex-col md:flex-row space-y-4 md:space-y-0 justify-between px-3 pb-4 border-b border-gray-200 my-2"
+      class="my-2 flex flex-col justify-between space-y-4 border-b border-gray-200 px-3 pb-4 md:flex-row md:space-y-0"
     >
       <UInput
         icon="i-heroicons-magnifying-glass-20-solid"
@@ -154,7 +155,7 @@ const items = (row: Product) => [
         placeholder="Search products..."
       />
       <div
-        class="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-6"
+        class="flex flex-col space-y-4 md:flex-row md:items-center md:space-x-6 md:space-y-0"
       >
         <UButton
           icon="i-heroicons-plus-20-solid"
@@ -191,7 +192,7 @@ const items = (row: Product) => [
       @select="select"
     >
       <template #images-data="{ row }">
-        <div class="h-6 flex items-center justify-center">
+        <div class="flex h-6 items-center justify-center">
           <NuxtImg
             v-if="!row.images?.length"
             class="rounded"
@@ -228,7 +229,7 @@ const items = (row: Product) => [
       </template> -->
 
       <template #isActive-data="{ row }">
-        <div class="text-sm flex items-center gap-1">
+        <div class="flex items-center gap-1 text-sm">
           <span>{{ row.isActive ? "Published" : "Draft" }}</span>
           <span
             class="h-[6px] w-[6px] rounded-full"
@@ -259,7 +260,7 @@ const items = (row: Product) => [
       </template>
     </UTable>
     <div
-      class="flex justify-between items-center px-3 pt-4 border-t border-gray-200"
+      class="flex items-center justify-between border-t border-gray-200 px-3 pt-4"
       v-if="pagination?.total && pagination.total > 0"
     >
       <span class="text-sm opacity-50">
