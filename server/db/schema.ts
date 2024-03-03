@@ -1,15 +1,17 @@
 import { relations } from "drizzle-orm"
 import {
   boolean,
+  integer,
   json,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core"
 
-export const Users = pgTable(
+export const users = pgTable(
   "users",
   {
     id: varchar("id")
@@ -23,95 +25,92 @@ export const Users = pgTable(
     username: varchar("username"),
     avatar: varchar("avatar"),
 
-    createdAt: timestamp("createdAt").notNull().defaultNow(),
-    updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+    createdAt: timestamp("createdAt", { mode: "string" })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updatedAt", { mode: "string" })
+      .notNull()
+      .defaultNow(),
   },
-  (users) => {
-    return {
-      externalIdIndex: uniqueIndex("users_externalId_idx").on(users.externalId),
-      emailIndex: uniqueIndex("users_email_idx").on(users.email),
-    }
-  },
+  (t) => ({
+    externalIdIndex: uniqueIndex("users_externalId_idx").on(t.externalId),
+    emailIndex: uniqueIndex("users_email_idx").on(t.email),
+  }),
 )
 
-export type User = typeof Users.$inferSelect // return type when queried
-export type NewUser = typeof Users.$inferInsert // insert type
-
-export const Stores = pgTable("stores", {
+export const stores = pgTable("stores", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   userId: varchar("userId")
     .notNull()
-    .references(() => Users.id),
+    .references(() => users.id),
 
+  name: varchar("name").notNull(),
   legalName: varchar("legalName"),
   timezone: varchar("timezone"),
   language: varchar("language"),
   unitSystem: varchar("unitSystem"),
   defaultWeightUnit: varchar("defaultWeightUnit"),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
 })
 
-export type Store = typeof Stores.$inferSelect // return type when queried
-export type NewStore = typeof Stores.$inferInsert // insert type
-
-export const CustomerGroups = pgTable("customergroups", {
+export const customergroups = pgTable("customergroups", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   storeId: varchar("storeId")
     .notNull()
-    .references(() => Stores.id),
-  imageId: varchar("imageId").references(() => Images.id),
+    .references(() => stores.id),
+  imageId: varchar("imageId").references(() => images.id),
 
   name: varchar("name").notNull(),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
 })
 
-export const CustomerGroups_Users = pgTable("customergroups_users", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  customerGroupId: varchar("customerGroupId")
-    .notNull()
-    .references(() => CustomerGroups.id),
-  customerId: varchar("customerId")
-    .notNull()
-    .references(() => Users.id),
+export const customergroups_users = pgTable(
+  "customergroups_users",
+  {
+    customerGroupId: varchar("customerGroupId")
+      .notNull()
+      .references(() => customergroups.id),
+    customerId: varchar("customerId")
+      .notNull()
+      .references(() => users.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.customerGroupId, t.customerId] }),
+  }),
+)
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
-
-export const Categories = pgTable("categories", {
+export const categories = pgTable("categories", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   storeId: varchar("storeId")
     .notNull()
-    .references(() => Stores.id),
-  imageId: varchar("imageId").references(() => Images.id),
+    .references(() => stores.id),
+  imageId: varchar("imageId").references(() => images.id),
 
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull(),
   description: text("description"),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
 })
 
-export const Products = pgTable("products", {
+export const products = pgTable("products", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   storeId: varchar("storeId")
     .notNull()
-    .references(() => Stores.id),
+    .references(() => stores.id),
 
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull(),
@@ -119,48 +118,37 @@ export const Products = pgTable("products", {
   price: varchar("price"),
   shortDescription: text("shortDescription"),
   longDescription: text("longDescription"),
-  available: varchar("available"),
+  available: integer("available"),
 
   isActive: boolean("isActive").default(false),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-  deletedAt: timestamp("deletedAt"),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
+  deletedAt: timestamp("deletedAt", { mode: "string" }),
 })
 
-export const ProductsRelations = relations(Products, ({ many }) => ({
-  variants: many(Variants),
-  productImages: many(Products_Images),
-  // images: many(images),
-  // categories: many(categories),
-  // attributes: many(attributes),
-}))
+export const products_categories = pgTable(
+  "products_categories",
+  {
+    productId: varchar("productId")
+      .notNull()
+      .references(() => products.id),
+    categoryId: varchar("categoryId")
+      .notNull()
+      .references(() => categories.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.productId, t.categoryId] }),
+  }),
+)
 
-export type Product = typeof Products.$inferSelect // return type when queried
-export type NewProduct = typeof Products.$inferInsert // insert type
-
-export const Products_Categories = pgTable("products_categories", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  productId: varchar("productId")
-    .notNull()
-    .references(() => Products.id),
-  categoryId: varchar("categoryId")
-    .notNull()
-    .references(() => Categories.id),
-
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
-
-export const Attributes = pgTable("attributes", {
+export const attributes = pgTable("attributes", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   storeId: varchar("storeId")
     .notNull()
-    .references(() => Stores.id),
+    .references(() => stores.id),
 
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull(),
@@ -176,34 +164,34 @@ export const Attributes = pgTable("attributes", {
   isFilterable: boolean("isFilterable").default(false),
   isSearchable: boolean("isSearchable").default(false),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
 })
 
-export const Products_Attributes = pgTable("products_attributes", {
+export const products_attributes = pgTable(
+  "products_attributes",
+  {
+    productId: varchar("productId")
+      .notNull()
+      .references(() => products.id),
+    attributeId: varchar("attributeId")
+      .notNull()
+      .references(() => attributes.id),
+
+    value: varchar("value"),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.productId, t.attributeId] }),
+  }),
+)
+
+export const variants = pgTable("variants", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   productId: varchar("productId")
     .notNull()
-    .references(() => Products.id),
-  attributeId: varchar("attributeId")
-    .notNull()
-    .references(() => Attributes.id),
-
-  value: varchar("value"),
-
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
-
-export const Variants = pgTable("variants", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  productId: varchar("productId")
-    .notNull()
-    .references(() => Products.id),
+    .references(() => products.id),
 
   sku: varchar("sku"),
   price: varchar("price").notNull(),
@@ -213,42 +201,35 @@ export const Variants = pgTable("variants", {
 
   isActive: boolean("isActive").default(false),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-  deletedAt: timestamp("deletedAt"),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
+  deletedAt: timestamp("deletedAt", { mode: "string" }),
 })
 
-export const VariantsRelations = relations(Variants, ({ one }) => ({
-  product: one(Products, {
-    fields: [Variants.productId],
-    references: [Products.id],
+export const variants_attributes = pgTable(
+  "variants_attributes",
+  {
+    variantId: varchar("variantId")
+      .notNull()
+      .references(() => variants.id),
+    attributeId: varchar("attributeId")
+      .notNull()
+      .references(() => attributes.id),
+
+    value: varchar("value").notNull(),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.variantId, t.attributeId] }),
   }),
-}))
+)
 
-export const Variants_Attributes = pgTable("variants_attributes", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  variantId: varchar("variantId")
-    .notNull()
-    .references(() => Variants.id),
-  attributeId: varchar("attributeId")
-    .notNull()
-    .references(() => Attributes.id),
-
-  value: varchar("value").notNull(),
-
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
-
-export const Images = pgTable("images", {
+export const images = pgTable("images", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => "uuid_generate_v4()"),
   storeId: varchar("storeId")
     .notNull()
-    .references(() => Stores.id),
+    .references(() => stores.id),
 
   assetId: varchar("assetId").notNull().unique(),
   signature: varchar("signature").notNull(),
@@ -262,58 +243,72 @@ export const Images = pgTable("images", {
   folder: varchar("folder").notNull(),
   path: varchar("path").notNull(),
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-  deletedAt: timestamp("deletedAt"),
+  createdAt: timestamp("createdAt", { mode: "string" }).notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt", { mode: "string" }).notNull().defaultNow(),
+  deletedAt: timestamp("deletedAt", { mode: "string" }),
 })
 
-export const ImagesRelations = relations(Images, ({ many }) => ({
-  imageProducts: many(Products_Images),
-}));
-
-export type Image = typeof Images.$inferSelect // return type when queried
-export type NewImage = typeof Images.$inferInsert // insert type
-
-export const Products_Images = pgTable("products_images", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  productId: varchar("productId")
-    .notNull()
-    .references(() => Products.id),
-  imageId: varchar("imageId")
-    .notNull()
-    .references(() => Images.id),
-
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
-
-export const Products_ImagesRelations = relations(Products_Images, ({ one }) => ({
-  images: one(Images, {
-    fields: [Products_Images.imageId],
-    references: [Images.id],
+export const products_images = pgTable(
+  "products_images",
+  {
+    productId: varchar("productId")
+      .notNull()
+      .references(() => products.id),
+    imageId: varchar("imageId")
+      .notNull()
+      .references(() => images.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.productId, t.imageId] }),
   }),
-  products: one(Products, {
-    fields: [Products_Images.productId],
-    references: [Products.id],
+)
+
+export const variants_images = pgTable(
+  "variants_images",
+  {
+    variantId: varchar("variantId")
+      .notNull()
+      .references(() => variants.id),
+    imageId: varchar("imageId")
+      .notNull()
+      .references(() => images.id),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.variantId, t.imageId] }),
   }),
-}));
+)
 
-export type ProductImage = typeof Products_Images.$inferSelect // return type when queried
-export type NewProductImage = typeof Products_Images.$inferInsert // insert type
+// Relations
 
-export const Variants_Images = pgTable("variants_images", {
-  id: varchar("id")
-    .primaryKey()
-    .$defaultFn(() => "uuid_generate_v4()"),
-  variantId: varchar("variantId")
-    .notNull()
-    .references(() => Variants.id),
-  imageId: varchar("imageId")
-    .notNull()
-    .references(() => Images.id),
+export const productsRelations = relations(products, ({ many }) => ({
+  variants: many(variants),
+  productImages: many(products_images),
+  // images: many(images),
+  // categories: many(categories),
+  // attributes: many(attributes),
+}))
 
-  createdAt: timestamp("createdAt").notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-})
+export const variantsRelations = relations(variants, ({ one }) => ({
+  product: one(products, {
+    fields: [variants.productId],
+    references: [products.id],
+  }),
+}))
+
+export const imagesRelations = relations(images, ({ many }) => ({
+  imageProducts: many(products_images),
+}))
+
+export const products_imagesRelations = relations(
+  products_images,
+  ({ one }) => ({
+    images: one(images, {
+      fields: [products_images.imageId],
+      references: [images.id],
+    }),
+    products: one(products, {
+      fields: [products_images.productId],
+      references: [products.id],
+    }),
+  }),
+)

@@ -1,3 +1,5 @@
+import type { Product } from "~/server/types"
+
 export default defineEventHandler(async (event) => {
   const store = await getStoreFromAuth(event)
 

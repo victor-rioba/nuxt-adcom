@@ -1,4 +1,5 @@
 import type { Knex } from "knex"
+import type { Attribute, Category, Image, Variant } from "~/server/types"
 
 // todo: add an image for every product so that I can use innerJoin instead of leftJoin
 

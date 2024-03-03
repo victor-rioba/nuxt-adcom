@@ -1,3 +1,5 @@
+import type { Image } from "~/server/types"
+
 export default defineEventHandler(async (event) => {
   const store = await getStoreFromAuth(event)
 

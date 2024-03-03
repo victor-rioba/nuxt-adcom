@@ -1,21 +1,6 @@
-import { z } from "zod"
-import type { Product } from '~/server/db/schema'
+import { productInsertSchema, type Product } from '~/server/types'
 
-const productsSchema = z.object({
-  name: z.string(),
-  slug: z.string(),
-  sku: z.string().optional(),
-  price: z.string(),
-  shortDescription: z.string().optional(),
-  longDescription: z.string().optional(),
-  available: z.number().optional(),
-  images: z
-    .array(z.object({ id: z.string(), deleted: z.boolean() }))
-    .optional(),
-  isActive: z.boolean(),
-})
-
-const validateProduct = useValidate(productsSchema)
+const validateProduct = useValidate(productInsertSchema)
 
 export default defineEventHandler(async (event) => {
   const store = await getStoreFromAuth(event)

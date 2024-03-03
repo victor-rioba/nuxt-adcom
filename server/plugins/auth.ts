@@ -1,4 +1,5 @@
 import type { UserType } from "@kinde-oss/kinde-typescript-sdk";
+import type { User, Store } from "~/server/types";
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook("beforeResponse", (event) => {
