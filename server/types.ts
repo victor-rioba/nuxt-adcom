@@ -22,11 +22,6 @@ export type UserInsert = typeof users.$inferInsert
 export const userInsertSchema = createInsertSchema(users)
 export const userSelectSchema = createSelectSchema(users)
 
-// override the default schema
-// const insertUserSchema = createInsertSchema(users, {
-//   role: z.string(),
-// });
-
 export type Store = typeof stores.$inferSelect
 export type StoreInsert = typeof stores.$inferInsert
 export const storeInsertSchema = createInsertSchema(stores)
@@ -51,13 +46,13 @@ export const categorySelectSchema = createSelectSchema(categories)
 
 export type Product = typeof products.$inferSelect
 export type ProductInsert = typeof products.$inferInsert
-export const productInsertSchema = createInsertSchema(products, {
-  storeId: z.undefined(),
-}).extend({
-  images: z
-    .array(z.object({ id: z.string(), deleted: z.boolean() }))
-    .optional(),
-})
+export const productInsertSchema = createInsertSchema(products)
+  .omit({ storeId: true, id: true, createdAt: true, updatedAt: true })
+  .extend({
+    images: z
+      .array(z.object({ id: z.string(), deleted: z.boolean() }))
+      .optional(),
+  })
 
 export const productSelectSchema = createSelectSchema(products)
 
