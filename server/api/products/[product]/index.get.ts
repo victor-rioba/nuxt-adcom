@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
     .where("products.slug", slug)
     .orWhere("products.id", slug)
     .whereNull("products.deletedAt")
-    .select<Product>("products.*")
 
   return populateProductRelations(query) || notFoundError()
 })

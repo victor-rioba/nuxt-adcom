@@ -39,7 +39,6 @@ export default defineEventHandler(async (event) => {
     .first()
     .where("products.storeId", store.id)
     .where("products.id", productId)
-    .select<Product>("products.*")
 
   return populateProductRelations(query)
 })

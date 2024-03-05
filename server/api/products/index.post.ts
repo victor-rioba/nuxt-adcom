@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
   const query = db<Product>("products")
     .first()
     .where("products.id", productId)
-    .select<Product>("products.*")
 
   return populateProductRelations(query)
 })

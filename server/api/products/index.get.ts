@@ -7,7 +7,6 @@ export default defineEventHandler(async (event) => {
 
   const query = db<Product>("products")
     .where("products.storeId", store.id)
-    .select<Product>("products.*")
 
   const populatedQuery = populateProductRelations(query)
 
